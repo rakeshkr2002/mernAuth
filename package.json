@@ -1,11 +1,11 @@
 {
-  "name": "auth-mern",
+  "name": "mern-auth",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "node --watch index.js"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
