@@ -1,31 +1,27 @@
-import authInstance from "../services/auth.services.js";
+import authInstance from '../services/auth.services.js'
+import generateToken from '../utils/generateToken.js';
+import asyncHandler from 'express-async-handler';
 
-export let register =async(req,res,next)=>{
+export let register=asyncHandler(async (req,res,next)=>{
+    let newUser=await authInstance.registerUser(req);
+    if(!newUser){
+       throw new Error("User is not registered!!")
+    }
+    let token=await generateToken(newUser._id)
+    if(!token){
+        throw new Error("Error generating token")
+    }
+    res.status(201).json({user:newUser,token})
+})
 
-    let newUser = await authInstance.registerUser(req)
-
-
-    if (!newUser) {
+export let login=asyncHandler(async (req,res,next)=>{
+    let {password}=req.body
+    let exisitingUser=await authInstance.loginUser(req);
+    if(!exisitingUser || !(await exisitingUser.comparePassword(password,exisitingUser.password))){
         return res.status(400).json({
-            messsage:"User not created"
+            message:"User not found please register"
         })
     }
-   
-    res.status(201).json(newUser);
-
-}
-export let login =async(req,res,next)=>{
-    let  {password} = req.body
-
-    let existingUser = await authInstance.loginUser(req)
-
-
-    if (!existingUser || !(await existingUser.comparePassword(password,existingUser.password) )) {
-        return res.status(400).json({
-            messsage:"User not found"
-        })
-    }
-   
-    res.status(200).json(existingUser);
-    
-}
+    let token=await generateToken(exisitingUser._id)
+    res.status(200).json({user:exisitingUser,token})
+})
