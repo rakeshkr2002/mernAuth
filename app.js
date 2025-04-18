@@ -4,8 +4,23 @@ dotenv.config();
 import connectDB from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
+import cors from "cors"
 connectDB()
 let app = express();
+
+import { rateLimit } from 'express-rate-limit'
+
+const limiter = rateLimit({
+	windowMs: 1 * 60 * 1000,
+	limit: 10, 
+	standardHeaders: 'draft-8', 
+	legacyHeaders: false
+})
+
+
+app.use(limiter)
+app.use(cors())
+
 
 app.use(express.json())
 app.use("/api/v1/auth",authRouter)

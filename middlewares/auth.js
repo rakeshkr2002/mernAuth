@@ -10,13 +10,17 @@ const auth=asyncHandler(async (req,res,next)=>{
     }
 
     if(!token){
-        return res.status(400).json("Please login!!")
+        let err=new Error("Token is not provided!!")
+        err.statusCode=401
+         throw err;
     }
     let decodedToken=jwt.verify(token,process.env.JWT_SECRET)
 
     let user=await userInstance.findUserById(decodedToken.id)
     if(!user){
-        return res.status(400).json("User doesn't exist,Please register!!")
+        let err=new Error("User is not found!!")
+         err.statusCode=401
+         throw err;
     }
     req.userId=user._id;
     next()
